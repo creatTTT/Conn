@@ -1,6 +1,9 @@
 package com.tu.entity;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+
     private Integer uId;
 
     private String name;

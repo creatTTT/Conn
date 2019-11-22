@@ -11,24 +11,28 @@
   <sql id="Base_Column_List" >
     o_id, u_id, address, creat_time, count
   </sql>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from order
+    from `order`
     where o_id = #{oId,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from order
+    delete from `order`
     where o_id = #{oId,jdbcType=INTEGER}
   </delete>
+
   <insert id="insert" parameterType="com.tu.entity.Order" >
-    insert into order (o_id, u_id, address, 
+    insert into `order` (o_id, u_id, address,
       creat_time, count)
     values (#{oId,jdbcType=INTEGER}, #{uId,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, 
       #{creatTime,jdbcType=TIMESTAMP}, #{count,jdbcType=DOUBLE})
   </insert>
+
   <insert id="insertSelective" parameterType="com.tu.entity.Order" >
-    insert into order
+    insert into `order`
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="oId != null" >
         o_id,
@@ -64,8 +68,10 @@
       </if>
     </trim>
   </insert>
+
+
   <update id="updateByPrimaryKeySelective" parameterType="com.tu.entity.Order" >
-    update order
+    update `order`
     <set >
       <if test="uId != null" >
         u_id = #{uId,jdbcType=INTEGER},
@@ -82,8 +88,9 @@
     </set>
     where o_id = #{oId,jdbcType=INTEGER}
   </update>
+
   <update id="updateByPrimaryKey" parameterType="com.tu.entity.Order" >
-    update order
+    update `order`
     set u_id = #{uId,jdbcType=INTEGER},
       address = #{address,jdbcType=VARCHAR},
       creat_time = #{creatTime,jdbcType=TIMESTAMP},

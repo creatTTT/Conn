@@ -1,15 +1,17 @@
 package com.tu.entity;
 
-import java.util.Date;
 
-public class Order {
+import java.io.Serializable;
+import java.sql.Timestamp;
+
+public class Order implements Serializable {
     private Integer oId;
 
     private Integer uId;
 
     private String address;
 
-    private Date creatTime;
+    private Timestamp creatTime;
 
     private Double count;
 
@@ -37,11 +39,11 @@ public class Order {
         this.address = address == null ? null : address.trim();
     }
 
-    public Date getCreatTime() {
+    public Timestamp getCreatTime() {
         return creatTime;
     }
 
-    public void setCreatTime(Date creatTime) {
+    public void setCreatTime(Timestamp creatTime) {
         this.creatTime = creatTime;
     }
 
@@ -51,5 +53,16 @@ public class Order {
 
     public void setCount(Double count) {
         this.count = count;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "oId=" + oId +
+                ", uId=" + uId +
+                ", address='" + address + '\'' +
+                ", creatTime=" + creatTime +
+                ", count=" + count +
+                '}';
     }
 }

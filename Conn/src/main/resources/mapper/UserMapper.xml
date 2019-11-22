@@ -25,7 +25,8 @@
 
   <insert id="insert" parameterType="com.tu.entity.User">
     insert into user (u_id, name, phoneNum)
-    values (#{uId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{phonenum,jdbcType=VARCHAR})
+    values (#{uId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{phonenum,jdbcType=VARCHAR}
+      )
   </insert>
 
   <insert id="insertSelective" parameterType="com.tu.entity.User">
