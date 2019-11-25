@@ -1,10 +1,10 @@
 package com.tu.service;
 
+import com.alibaba.fastjson.JSON;
 import com.tu.entity.User;
 import com.tu.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -17,33 +17,26 @@ public class UserService {
     @Autowired
     UserMapper userMapper;
     @Autowired
-    RedisTemplate redisTemplate;
+    StringRedisTemplate stringRedisTemplate;
 
     public String text(){
-        ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        return operations.get("user_2");
+
+        return stringRedisTemplate.opsForValue().get("User_2");
     }
-
-
-
 
     /**
      * 获取用户策略：先从缓存中获取用户，没有则取数据表中 数据，再将数据写入缓存
      */
-    public User findUserById(int id) {
+    public String findUserById(int id) {
         String key = "user_" + id;
 
-        ValueOperations<String, User> operations = redisTemplate.opsForValue();
-
-        boolean hasKey = redisTemplate.hasKey(key);
+        boolean hasKey = stringRedisTemplate.hasKey(key);
         if (hasKey) {
             long start = System.currentTimeMillis();
-            User user = operations.get(key);
+            String user = stringRedisTemplate.opsForValue().get(key);
             System.out.println("==========从缓存中获得数据=========");
-            System.out.println("username: "+user.getName());
             long end = System.currentTimeMillis();
             System.out.println("查询redis花费的时间是:" + (end - start)+"ms");
-            System.out.println("==============================");
             return user;
         } else {
             long start = System.currentTimeMillis();
@@ -51,50 +44,32 @@ public class UserService {
             System.out.println("==========从数据表中获得数据=========");
             System.out.println("username: "+user.getName());
             // 写入缓存
-            operations.set(key, user, 5, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user),5,TimeUnit.MINUTES);
+            System.out.println(JSON.toJSON(user)+"-----------------");
             long end = System.currentTimeMillis();
             System.out.println("查询mysql花费的时间是:" + (end - start)+"ms");
-            System.out.println("==============================");
-            return user;
+            User user1=JSON.parseObject(JSON.toJSONString(user),User.class);
+            return user1.toString();
         }
 
     }
 
-    /**
-     * 更新用户策略：先更新数据表，成功之后，删除原来的缓存，再更新缓存
-     */
-    public int updateUser(User user) {
-        ValueOperations<String, User> operations = redisTemplate.opsForValue();
-        int result = userMapper.updateByPrimaryKey(user);
-        if (result != 0) {
-            String key = "user_" + user.getuId();
-            boolean haskey = redisTemplate.hasKey(key);
-            if (haskey) {
-                redisTemplate.delete(key);
-                System.out.println("删除缓存中的key=========>" + key);
-            }
-            // 再将更新后的数据加入缓存
-            User userNew = userMapper.selectByPrimaryKey(user.getuId());
-            if (userNew != null) {
-                operations.set(key, userNew, 3, TimeUnit.HOURS);
-            }
-        }
-        return result;
+    public User getUser(int userId) {
+        System.out.println("执行此方法，说明没有缓存，如果没有走到这里，就说明缓存成功了");
+        User user = new User();
+        user.setuId(999);
+        user.setName("aaa");
+        user.setPhonenum("123456789");
+        return user;
     }
 
-    /**
-     * 删除用户策略：删除数据表中数据，然后删除缓存
-     */
-    public int deleteUserById(int id) {
-        int result = userMapper.deleteByPrimaryKey(id);
-        String key = "user_" + id;
-        if (result != 0) {
-            boolean hasKey = redisTemplate.hasKey(key);
-            if (hasKey) {
-                redisTemplate.delete(key);
-                System.out.println("删除了缓存中的key:" + key);
-            }
-        }
-        return result;
+    public User getUser2(int userId) {
+        System.out.println("执行此方法，说明没有缓存，如果没有走到这里，就说明缓存成功了");
+        User user = new User();
+        user.setuId(777);
+        user.setName("bbb");
+        user.setPhonenum("123456789");
+        return user;
     }
+
 }

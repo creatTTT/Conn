@@ -1,5 +1,6 @@
 package com.tu.mapper;
 
+import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class OrderMapperTest {
 
     @Test
     public void testSelectByPrimaryKey() throws Exception {
-        System.out.println(mapper.selectByPrimaryKey(1).toString());
+        //System.out.println(mapper.selectByPrimaryKey(1).toString());
+        System.out.println(JSON.toJSONString(mapper.selectByPrimaryKey(1)));
     }
 }
