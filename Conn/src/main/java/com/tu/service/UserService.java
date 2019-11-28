@@ -19,13 +19,13 @@ public class UserService {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
-    public String text(){
 
+    public String text(){
         return stringRedisTemplate.opsForValue().get("User_2");
     }
 
     /**
-     * 获取用户策略：先从缓存中获取用户，没有则取数据表中 数据，再将数据写入缓存
+     * 先从缓存中获取用户，没有则取数据表中数据，再将数据写入缓存
      */
     public String findUserById(int id) {
         String key = "user_" + id;
@@ -42,16 +42,13 @@ public class UserService {
             long start = System.currentTimeMillis();
             User user = userMapper.selectByPrimaryKey(id);
             System.out.println("==========从数据表中获得数据=========");
-            System.out.println("username: "+user.getName());
             // 写入缓存
             stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(user),5,TimeUnit.MINUTES);
             System.out.println(JSON.toJSON(user)+"-----------------");
             long end = System.currentTimeMillis();
             System.out.println("查询mysql花费的时间是:" + (end - start)+"ms");
-            User user1=JSON.parseObject(JSON.toJSONString(user),User.class);
-            return user1.toString();
+            return JSON.toJSONString(user);
         }
-
     }
 
     public User getUser(int userId) {

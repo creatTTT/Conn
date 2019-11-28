@@ -1,15 +1,16 @@
 package com.tu.controllor;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.tu.annotation.NeedLogined;
 import com.tu.entity.User;
 import com.tu.mapper.UserMapper;
+import com.tu.service.TokenService;
 import com.tu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by Administrator on 2019/11/21 0021.
@@ -22,6 +23,8 @@ public class AControllor {
     UserMapper mapper;
     @Autowired
     UserService userService;
+    @Autowired
+    TokenService tokenService;
 
     @RequestMapping("/")
     public String fun(){
@@ -57,6 +60,28 @@ public class AControllor {
     @CacheEvict("userCache")
     public String deleteUser(@RequestParam(required = true) String userId) {
         return "删除成功";
+    }
+
+    @RequestMapping("/login")
+    public Object login(){
+        JSONObject jsonObject=new JSONObject();
+        String userForBase=userService.findUserById(1);
+        User user= JSON.parseObject(userForBase,User.class);
+        if(user==null){
+            jsonObject.put("message","登录失败,用户不存在");
+            return jsonObject;
+        }else {
+            String token = tokenService.getToken(user);
+            jsonObject.put("token", token);
+            jsonObject.put("user", userForBase);
+            return jsonObject;
+        }
+    }
+
+    @NeedLogined
+    @GetMapping("/getMessage")
+    public String getMessage(){
+        return "你已通过验证";
     }
 
 }
